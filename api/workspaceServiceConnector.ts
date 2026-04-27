@@ -1,0 +1,60 @@
+import axios, { AxiosError } from 'axios'
+import axiosRetry from 'axios-retry'
+
+const BASE_URL = process.env.NEXT_WORKSPACE_SERVICE_API_URL || 'http://localhost:3001'
+const API_KEY = process.env.NEXT_WORKSPACE_SERVICE_API_KEY || ''
+
+const retryableStatusCodes = [413, 429, 500, 502, 503, 504, 521, 522, 524]
+const retryableMethods = ['GET']
+
+const workspaceServiceConnector = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    'x-api-key': API_KEY,
+  },
+  timeout: 20000,
+})
+
+axiosRetry(workspaceServiceConnector, {
+  retries: 3,
+  retryDelay: axiosRetry.exponentialDelay,
+  retryCondition: (error: AxiosError) => {
+    const status = error.response?.status
+    const method = error.config?.method?.toUpperCase()
+
+    if (!status || !method) return false
+
+    return retryableStatusCodes.includes(status) && retryableMethods.includes(method)
+  },
+  onRetry: (retryCount, error) => {
+    console.warn(`[WorkspaceServiceConnector] - Retry #${retryCount}/3. Reason: ${error.message}`)
+  },
+})
+
+workspaceServiceConnector.interceptors.request.use((config) => {
+  const correlationId = Math.random().toString(36).substring(2, 15)
+  config.headers['x-correlation-id'] = correlationId
+  if (!config.data && (config.method === 'delete' || config.method === 'DELETE')) {
+    config.data = {}
+  }
+  return config
+})
+
+workspaceServiceConnector.interceptors.response.use(
+  (response) => response.data,
+  (error: AxiosError<{ message?: string }>) => {
+    const status = error.response?.status
+    const remoteMessage = error.response?.data?.message ?? error.message
+
+    const apiError = {
+      message: `Workspace Service Error: ${remoteMessage}`,
+      status,
+      statusText: error.response?.statusText,
+      code: error.code,
+    }
+    return Promise.reject(apiError)
+  }
+)
+
+export default workspaceServiceConnector
