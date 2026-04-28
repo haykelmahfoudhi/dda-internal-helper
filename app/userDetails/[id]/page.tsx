@@ -4,6 +4,7 @@ import { useState, useTransition, useEffect } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { Plus, Copy, Mail, RotateCw, Trash2, Key, Calendar, X, Check } from 'lucide-react'
+import toast, { Toaster } from 'react-hot-toast'
 import { getUserById, getUserMemberships } from '@/services/user'
 import {
   getUserWorkspaces,
@@ -218,6 +219,7 @@ export default function UserDetailsPage() {
   const handleCopyKey = () => {
     if (newApiKey) {
       navigator.clipboard.writeText(newApiKey)
+      toast.success('API key copied to clipboard')
     }
   }
 
@@ -322,6 +324,7 @@ export default function UserDetailsPage() {
         token_type: newTokenData.token.token_type || 'Bearer',
       }
       navigator.clipboard.writeText(JSON.stringify(tokenObj, null, 2))
+      toast.success('Access token copied to clipboard')
     }
   }
 
@@ -356,6 +359,7 @@ export default function UserDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      <Toaster position="top-right" />
       <div className="flex">
         <nav className="w-64 min-h-screen bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 p-6">
           <Link
