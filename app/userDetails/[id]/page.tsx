@@ -414,10 +414,34 @@ export default function UserDetailsPage() {
                     {user.email[0].toUpperCase()}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                      {user.email}
-                    </h2>
-                    <p className="text-slate-500 dark:text-slate-400">{user.id}</p>
+                    <div className="flex items-center gap-2 group">
+                      <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+                        {user.email}
+                      </h2>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.email)
+                          toast.success('Email copied to clipboard')
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                        title="Copy Email"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="flex items-center gap-2 group">
+                      <p className="text-slate-500 dark:text-slate-400">{user.id}</p>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(user.id)
+                          toast.success('User ID copied to clipboard')
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                        title="Copy User ID"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <span
                       className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
                         user.status === 'active'
@@ -474,9 +498,22 @@ export default function UserDetailsPage() {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
-                            Workspace ID: {membership.workspaceId}
-                          </h3>
+                          <div className="flex items-center gap-2 group">
+                            <h3 className="font-semibold text-slate-900 dark:text-white">
+                              Workspace ID: {membership.workspaceId}
+                            </h3>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                navigator.clipboard.writeText(membership.workspaceId)
+                                toast.success('Workspace ID copied to clipboard')
+                              }}
+                              className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                              title="Copy Workspace ID"
+                            >
+                              <Copy className="w-4 h-4" />
+                            </button>
+                          </div>
                           <p className="text-sm text-slate-500 dark:text-slate-400">
                             Region: {membership.region}
                           </p>
@@ -708,10 +745,23 @@ key={workspace.id}
 }
 
 function InfoCard({ label, value }: { label: string; value: string }) {
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    navigator.clipboard.writeText(value)
+    toast.success(`${label} copied to clipboard`)
+  }
+
   return (
-    <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+    <div className="p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg relative group">
       <div className="text-sm text-slate-500 dark:text-slate-400 mb-1">{label}</div>
-      <div className="text-slate-900 dark:text-white font-medium break-all">{value}</div>
+      <div className="text-slate-900 dark:text-white font-medium break-all pr-8">{value}</div>
+      <button
+        onClick={handleCopy}
+        title={`Copy ${label}`}
+        className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity rounded-md hover:bg-slate-200 dark:hover:bg-slate-600"
+      >
+        <Copy className="w-4 h-4" />
+      </button>
     </div>
   )
 }
@@ -863,9 +913,22 @@ function WorkspaceAccessTokenModal({
                         {token.status}
                       </span>
                     </div>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mb-1">
-                      Token ID: <code className="text-xs">{token.tokenId}</code>
-                    </p>
+                    <div className="flex items-center gap-2 mb-1 group">
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
+                        Token ID: <code className="text-xs">{token.tokenId}</code>
+                      </p>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          navigator.clipboard.writeText(token.tokenId)
+                          toast.success('Token ID copied to clipboard')
+                        }}
+                        className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity rounded hover:bg-slate-200 dark:hover:bg-slate-700"
+                        title="Copy Token ID"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
                     <div className="flex flex-wrap gap-2 mb-1">
                       {token.permissions.map((perm) => (
                         <span
