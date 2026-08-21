@@ -11,31 +11,11 @@ export enum MembershipRole {
 export const GetUserResponse = z.object({
   id: z.string(),
   email: z.string().email(),
-  firstName: z.string(),
-  lastName: z.string(),
-  identityProviderId: z.string().optional(),
-
-  phone: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v ?? undefined),
-  country: z.string(),
-  region: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v ?? undefined),
-  timezone: z.string(),
-  locale: z
-    .string()
-    .nullable()
-    .optional()
-    .transform((v) => v ?? undefined),
-
-  preferredLanguage: z.string().default('en'),
+  identityProvider: z.string(),
+  identityProviderId: z.string(),
   status: z.enum(['active', 'suspended', 'deactivated']),
-  lastProfileUpdateDate: z.coerce.date(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 })
 export type GetUserResponse = z.infer<typeof GetUserResponse>
 
@@ -44,7 +24,6 @@ export const MembershipSchema = z.object({
   workspaceId: z.string(),
   region: z.string(),
   role: z.nativeEnum(MembershipRole),
-  isActive: z.boolean(),
-  joinedAt: z.date(),
+  joinedAt: z.coerce.date(),
 })
 export type MembershipResponse = z.infer<typeof MembershipSchema>

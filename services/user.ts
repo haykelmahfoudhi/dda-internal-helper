@@ -11,7 +11,7 @@ export async function searchUsers(query: string): Promise<ServerActionResponse<G
 
     const users: GetUserResponse[] = await userApi.getUsersByEmail(query)
 
-    return users.sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''))
+    return users.sort((a, b) => a.email.localeCompare(b.email))
   }, 'searchUsers')
 }
 

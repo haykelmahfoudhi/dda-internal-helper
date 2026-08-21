@@ -411,14 +411,13 @@ export default function UserDetailsPage() {
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
                 <div className="flex items-center gap-6 mb-8 pb-6 border-b border-slate-200 dark:border-slate-700">
                   <div className="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-2xl">
-                    {user.firstName[0]}
-                    {user.lastName[0]}
+                    {user.email[0].toUpperCase()}
                   </div>
                   <div>
                     <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
-                      {user.firstName} {user.lastName}
+                      {user.email}
                     </h2>
-                    <p className="text-slate-500 dark:text-slate-400">{user.email}</p>
+                    <p className="text-slate-500 dark:text-slate-400">{user.id}</p>
                     <span
                       className={`inline-block mt-2 px-3 py-1 rounded-full text-sm font-medium ${
                         user.status === 'active'
@@ -435,19 +434,17 @@ export default function UserDetailsPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   <InfoCard label="User ID" value={user.id} />
-                  {user.identityProviderId && (
-                    <InfoCard label="Identity Provider ID" value={user.identityProviderId} />
-                  )}
                   <InfoCard label="Email" value={user.email} />
-                  <InfoCard label="Phone" value={user.phone || 'N/A'} />
-                  <InfoCard label="Country" value={user.country} />
-                  <InfoCard label="Region" value={user.region || 'N/A'} />
-                  <InfoCard label="Timezone" value={user.timezone} />
-                  <InfoCard label="Locale" value={user.locale || 'N/A'} />
-                  <InfoCard label="Preferred Language" value={user.preferredLanguage} />
+                  <InfoCard label="Identity Provider" value={user.identityProvider} />
+                  <InfoCard label="Identity Provider ID" value={user.identityProviderId} />
+                  <InfoCard label="Status" value={user.status} />
                   <InfoCard
-                    label="Last Profile Update"
-                    value={new Date(user.lastProfileUpdateDate).toLocaleString()}
+                    label="Created At"
+                    value={new Date(user.createdAt).toLocaleString()}
+                  />
+                  <InfoCard
+                    label="Updated At"
+                    value={new Date(user.updatedAt).toLocaleString()}
                   />
                 </div>
               </div>
@@ -490,15 +487,6 @@ export default function UserDetailsPage() {
                           >
                             {membership.role}
                           </span>
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${
-                              membership.isActive
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                            }`}
-                          >
-                            {membership.isActive ? 'Active' : 'Inactive'}
-                          </span>
                           <p className="text-xs text-slate-500 dark:text-slate-400">
                             Joined: {new Date(membership.joinedAt).toLocaleString()}
                           </p>
@@ -527,48 +515,50 @@ export default function UserDetailsPage() {
                 </div>
               ) : (
                 <div className="grid gap-4">
-                  {workspaces.map((workspace) => (
-                    <div
-                      key={workspace.id}
-                      onClick={() => handleWorkspaceClick(workspace)}
-                      className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-blue-500 cursor-pointer transition-all"
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
-                            {workspace.name}
-                          </h3>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Slug: {workspace.slug}
-                          </p>
-                          <p className="text-sm text-slate-500 dark:text-slate-400">
-                            Region: {workspace.region}
-                          </p>
-                        </div>
-                        <div className="flex flex-col sm:items-end gap-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${
-                              workspace.status === 'active'
-                                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : workspace.status === 'pending'
-                                  ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                                  : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                            }`}
-                          >
-                            {workspace.status}
-                          </span>
-                          <span
-                            className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeClass(workspace.membership.role)}`}
-                          >
-                            {workspace.membership.role}
-                          </span>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">
-                            Created: {new Date(workspace.createdAt).toLocaleString()}
-                          </p>
+                  {workspaces.map((workspace) => {
+                    const membership = workspace.membership
+                    return (
+                      <div
+key={workspace.id}
+              onClick={() => handleWorkspaceClick(workspace)}
+                        className="p-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:border-blue-500 cursor-pointer transition-all"
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                          <div>
+                            <h3 className="font-semibold text-slate-900 dark:text-white">
+                              {workspace.name}
+                            </h3>
+                            <p className="text-sm text-slate-500 dark:text-slate-400">
+                              Region: {workspace.region}
+                            </p>
+                          </div>
+                          <div className="flex flex-col sm:items-end gap-2">
+                            <span
+                              className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                workspace.status === 'active'
+                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                  : workspace.status === 'pending'
+                                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                              }`}
+                            >
+                              {workspace.status}
+                            </span>
+                            {membership && (
+                              <span
+                                className={`px-3 py-1 rounded-full text-sm font-medium ${getRoleBadgeClass(membership.role)}`}
+                              >
+                                {membership.role}
+                              </span>
+                            )}
+                            <p className="text-xs text-slate-500 dark:text-slate-400">
+                              Created: {new Date(workspace.createdAt).toLocaleString()}
+                            </p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    )
+                  })}
                 </div>
               )}
             </div>
@@ -824,7 +814,7 @@ function WorkspaceAccessTokenModal({
           <div>
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">{workspace.name}</h3>
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              {workspace.region} - {workspace.slug}
+              {workspace.region}
             </p>
           </div>
           <button

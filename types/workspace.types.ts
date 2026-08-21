@@ -7,21 +7,19 @@ export enum WorkspaceStatus {
   INACTIVE = 'inactive',
 }
 
-export const WorkspaceMemberships = z.object({
+export const WorkspaceMembership = z.object({
   userId: z.string(),
   role: z.nativeEnum(MembershipRole),
-  isActive: z.boolean(),
-  joinedAt: z.date(),
+  joinedAt: z.coerce.date(),
 })
 export const GetUserWorkspaceResponse = z.object({
   id: z.string(),
   name: z.string(),
-  slug: z.string(),
   region: z.string(),
-  status: z.enum(WorkspaceStatus),
-  createdAt: z.date(),
-  updatedAt: z.date(),
-  membership: WorkspaceMemberships,
+  status: z.nativeEnum(WorkspaceStatus),
+  membership: WorkspaceMembership,
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 })
 
 export type GetUserWorkspaceResponse = z.infer<typeof GetUserWorkspaceResponse>

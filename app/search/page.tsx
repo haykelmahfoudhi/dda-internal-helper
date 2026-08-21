@@ -83,7 +83,15 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">User Search</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">User Search</h1>
+          <button
+            onClick={() => router.push('/cognito')}
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition-colors"
+          >
+            Cognito User Interface
+          </button>
+        </div>
 
         <form onSubmit={handleSearch} className="mb-6">
           <div className="flex gap-4">
@@ -141,30 +149,35 @@ export default function SearchPage() {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-400 font-semibold text-lg">
-                    {user.firstName[0]}
-                    {user.lastName[0]}
+                    {user.email[0].toUpperCase()}
                   </div>
                   <div>
                     <h3 className="font-semibold text-slate-900 dark:text-white">
-                      {user.firstName} {user.lastName}
+                      {user.email}
                     </h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">{user.email}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">{user.id}</p>
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-3 text-sm">
-                  {user.phone && (
-                    <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full">
-                      📞 {user.phone}
-                    </span>
-                  )}
                   <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full">
-                    🌎 {user.country}
+                    {user.identityProvider}
                   </span>
                   {user.identityProviderId && (
                     <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-full">
-                      🔐 {user.identityProviderId}
+                      {user.identityProviderId}
                     </span>
                   )}
+                  <span
+                    className={`px-3 py-1 rounded-full text-sm font-medium ${
+                      user.status === 'active'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                        : user.status === 'suspended'
+                          ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                          : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    }`}
+                  >
+                    {user.status}
+                  </span>
                 </div>
               </div>
             </div>
